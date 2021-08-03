@@ -1,5 +1,6 @@
 package com.everis.listadecontatos.feature.contato
 
+import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -49,27 +50,38 @@ class ContatoActivity : BaseActivity() {
         val nome = etNome.text.toString()
         val telefone = etTelefone.text.toString()
 
-        if(index == -1){
-            val contato = ContatosVO(
-                null,
-                nome,
-                telefone
-            )
-            ContatoApplication.instance.helperDB?.salvarContato(contato)
-        }else{
-            val contato = ContatosVO(
-                index,
-                nome,
-                telefone
-            )
-            ContatoApplication.instance.helperDB?.updateContato(contato)
-        }
-        finish()
+        Thread(Runnable {
+            if(index == -1){
+                val contato = ContatosVO(
+                    null,
+                    nome,
+                    telefone
+                )
+                ContatoApplication.instance.helperDB?.salvarContato(contato)
+            }else{
+                val contato = ContatosVO(
+                    index,
+                    nome,
+                    telefone
+                )
+                ContatoApplication.instance.helperDB?.updateContato(contato)
+            }
+            runOnUiThread {
+                finish()
+            }
+        }).start()
+
     }
 
     fun onClickExcluirContato(view: View) {
-        ContatoApplication.instance.helperDB?.deleteContato(index.toString())
-        finish()
+        Thread(Runnable {
+            ContatoApplication.instance.helperDB?.deleteContato(index.toString())
+            runOnUiThread {
+                finish()
+            }
+
+        })
+
 
     }
 }
