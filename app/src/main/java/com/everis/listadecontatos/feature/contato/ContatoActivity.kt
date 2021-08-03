@@ -33,23 +33,37 @@ class ContatoActivity : BaseActivity() {
             btnExcluirContato.visibility = View.GONE
             return
         }
+        Thread(Runnable {
+            var contato = ContatoApplication.instance.helperDB?.buscarContatos("$index",true)
+            var c = contato?.getOrNull(0)
+            runOnUiThread{
+                etNome.setText(c?.nome)
+                etTelefone.setText(c?.telefone)
+            }
 
-        var contato = ContatoApplication.instance.helperDB?.buscarContatos("$index",true) ?: return
-        var c = contato.getOrNull(0)?:return
-        Log.d("TESTE", c.toString())
-        etNome.setText(c.nome)
-        etTelefone.setText(c.telefone)
+        }).start()
+
     }
 
     private fun onClickSalvarContato(){
         val nome = etNome.text.toString()
         val telefone = etTelefone.text.toString()
-        val contato = ContatosVO(
-            null,
-            nome,
-            telefone
-        )
-        ContatoApplication.instance.helperDB?.salvarContato(contato)
+
+        if(index == -1){
+            val contato = ContatosVO(
+                null,
+                nome,
+                telefone
+            )
+            ContatoApplication.instance.helperDB?.salvarContato(contato)
+        }else{
+            val contato = ContatosVO(
+                index,
+                nome,
+                telefone
+            )
+            ContatoApplication.instance.helperDB?.updateContato(contato)
+        }
         finish()
     }
 
